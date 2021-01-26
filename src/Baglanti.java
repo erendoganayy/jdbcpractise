@@ -14,6 +14,33 @@ public class Baglanti {
     private String host="localhost";
     private int port=3306;
     private Connection con=null;
+    public void commitveRollback(){
+        Scanner scanner=new Scanner(System.in);
+        try{
+            con.setAutoCommit(false);
+            String query1="delete from calisanlar where id=9";
+            String query2="update calisanlar set email = 'bendegistirildim@hotmail.com' where id = 1";
+            System.out.println("Guncellemeden once : ");
+            calisanGetir();
+
+            Statement statement = con.createStatement();
+            statement.executeUpdate(query1);
+            statement.executeUpdate(query2);
+            System.out.println("İslemleriniz kaydedilsin mi ? (yes/no)");
+            String cevap=scanner.nextLine();
+            if (cevap.equals("yes")){
+                con.commit();
+                calisanGetir();
+                System.out.println("Veritabani guncellenmistir!");
+            }
+            else {con.rollback();
+                System.out.println("Veritabani guncellenmesi iptal edilmistir ! ");}
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+
+    }
     public void preparedCalisanlariGetir(int id){
         String sorgu="SELECT * from calisanlar where id = ?";
        try{ preparedStatement=con.prepareStatement(sorgu);
@@ -125,6 +152,7 @@ catch (ClassNotFoundException e){
                     "2-Calisan Bilgilerini guncelle\n" +
                     "3-Calisani kov\n" +
                     "4-Calisan Listesini goruntule\n" +
+                    "5-Commit&rollback method for developers" +
                     "q-CIKIS");
             String islem=scanner.nextLine();
             if (islem.equals("q")) {
@@ -171,6 +199,9 @@ catch (ClassNotFoundException e){
             }
             else if (islem.equals("4")){
                 baglanti.calisanGetir();
+            }
+            else if (islem.equals("5")){
+                baglanti.commitveRollback();
             }
             else {
                 System.out.println("GECERSIZ BIR ISLEM GIRDINIZ ! ");
